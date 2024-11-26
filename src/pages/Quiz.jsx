@@ -10,43 +10,57 @@ const Quiz = () => {
   const [marks, setMarks] = useState(5);
   const [ans, setAns] = useState();
   const [totalMarks, setTotalMarks] = useState(0);
-  console.log(quest.ques);
+  // console.log(quest.ques);
   const navigate = useNavigate();
 
   const { name } = location.state;
   const handleClick = (e) => {
     e.preventDefault();
+    setTimer(15);
     setQno((oldqno) => oldqno + 1);
-    console.log(qno);
     setMarks((oldmarks) => oldmarks + 5);
-    if (ans === quest.ans) {
-      setTotalMarks((oldtMarks) => oldtMarks + 5);
-    }
+
+    // if (ans === quest.ans) {
+    //   setTotalMarks((oldtMarks) => oldtMarks + 5);
+    // }
     if (qno == 10) {
       navigate("/result", { state: { totalMarks } });
     }
     setQues(questions[qno]);
+    console.log("ans", ans);
   };
 
-  //   useEffect(() => {
-  //     setQues(questions[qno]);
-  //     const timeout1 = setInterval(() => {
-  //       setTimer((oldTimer) => oldTimer - 1);
-  //     }, 1000);
-  //     return () => clearTimeout(timeout1);
-  //   }, []);
-
   useEffect(() => {
-    // setQues(questions[qno - 1]);
-    console.log(quest);
-
-    const timeout2 = setInterval(() => {
-      //   setQues(questions[qno]);
-      //   setQues((oldqno) => oldqno + 1);
-    }, 15000);
-    return () => clearTimeout(timeout2);
+    setQues(questions[qno]);
+    const timeout1 = setInterval(() => {
+      setTimer((oldTimer) => {
+        if (oldTimer == 0) {
+          console.log("qno", qno);
+          if (qno >= 9) {
+            navigate("/result", { state: { totalMarks } });
+          }
+          setQno((oldqno) => oldqno + 1);
+          setQues(questions[qno]);
+          return 15;
+        }
+        return oldTimer - 1;
+      });
+    }, 1000);
+    return () => clearTimeout(timeout1);
   }, [quest]);
 
+  const handleOptions = (e, value) => {
+    e.preventDefault();
+    const op = value;
+    // console.log("options:", op);
+    setAns(op);
+    if (op == quest.ans) {
+      // e.target.style.backgroundColor = "green";
+      setTotalMarks((oldtMarks) => oldtMarks + 5);
+    } else {
+      // e.target.style.backgroundColor = "red";
+    }
+  };
   return (
     <>
       <div className="quiz">
@@ -65,10 +79,18 @@ const Quiz = () => {
             <div className="qno">{qno}/10</div>
           </div>
           <div className="answers">
-            <button onClick={() => setAns(1)}>{quest.options[0]}</button>
-            <button onClick={() => setAns(2)}>{quest.options[1]}</button>
-            <button onClick={() => setAns(3)}>{quest.options[2]}</button>
-            <button onClick={() => setAns(4)}>{quest.options[3]}</button>
+            <button onClick={(e) => handleOptions(e, 1)}>
+              {quest.options[0]}
+            </button>
+            <button onClick={(e) => handleOptions(e, 2)}>
+              {quest.options[1]}
+            </button>
+            <button onClick={(e) => handleOptions(e, 3)}>
+              {quest.options[2]}
+            </button>
+            <button onClick={(e) => handleOptions(e, 4)}>
+              {quest.options[3]}
+            </button>
           </div>
           <button className="nextbtn" onClick={handleClick}>
             Next Question

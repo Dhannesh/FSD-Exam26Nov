@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 const Welcome = () => {
   const [name, setName] = useState("");
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
   const handleClick = (e) => {
     e.preventDefault();
     if (name) {
       navigate("/quiz", { state: { name } });
     } else {
-      alert("please enter name");
+      setError(true);
     }
   };
   return (
@@ -20,6 +21,7 @@ const Welcome = () => {
           type="text"
           placeholder="Please enter your name"
           value={name}
+          className={error && "error"}
           onChange={(e) => setName(e.target.value)}
         />
         <button onClick={handleClick}>Start Quiz</button>
